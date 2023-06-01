@@ -11,21 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
+STATIC_DIR = os.path.join(BASE_DIR,'static')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_c3h#63dg6(4a2gr9l931fmb9sk4fjk4_+pbr9*6$8@#ucn2q4'
+SECRET_KEY = 'django-insecure-2(+1s$@uo%-6ukm4bo9e7jgg*u^w%wa_rcp(a-#t)0&q7h)55t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'Application.CustomUser'
 
 
 # Application definition
@@ -37,7 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Application',
+    'crispy_forms',
+    'crispy_bootstrap4',
+    'rest_framework',
+    'djoser',
+    'django_filters',
+    'rest_framework.authtoken', #reference(https://www.django-rest-framework.org/api-guide/authentication/)
 ]
+
+CRISPY_TEMPLATE_PACK ='bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,12 +62,30 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+REST_FRAMEWORK = {
+    # Default global settings for authentication - reference(www.django-rest-framework.org/api-guide/authentication)
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+
+# Default global settings for permissions - reference(www.django-rest-framework.org/api-guide/permission)
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
+
+
 ROOT_URLCONF = 'social_book.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,8 +147,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS=[STATIC_DIR,]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# AUTH_USER_MODEL = 'Application.CustomUser'
+
+MEDIA_ROOT=os.path.join(BASE_DIR,"media")
+MEDIA_URL="/media/"
+ #this is done to apply bootstrap to modelForms using crispy forms template.
+#setting of crispy form is also added in the installed apps. then after doing this directly use it in the html form
+#where modelform is rendered
+
+
+##comment- settings for configuring gmail for sending mails on registration to registered user
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER ='sstesting64@gmail.com' #sender's email-id
+EMAIL_HOST_PASSWORD ='tsupzosalbwavqly' # app password associated with above email-id
+## since for new gmail less secure app setting is disabled so to enable it app password is used instead of
+## original email password
