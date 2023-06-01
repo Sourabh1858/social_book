@@ -1,0 +1,56 @@
+
+<!DOCTYPE html> 
+{% load static %}
+{% csrf_token %}
+<html>
+	<head>
+		<title>Blogger Home</title>
+
+		{% load bootstrap5 %}
+ 		{% bootstrap_css %}
+  		{% bootstrap_javascript %}
+
+	</head>
+	<body>
+         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+             <a href="#" class="navbar-brand">
+                <img src="{% static 'css/blog.png'%}" height="70" width="70">Bloggers</a>
+            <ul class="navbar-nav">
+                <li class="navbar-item"><a href="{% url 'index' %}" class="nav-link">Home</a></li>
+                <li class="navbar-item"><a href="{% url 'upload' %}" class="nav-link">Upload Blog</a></li>
+                <li class="navbar-item"><a href="{% url 'logout' %}" class="nav-link">Log Out</a></li>
+            </ul>
+                       <ul class="navbar-nav ml-auto">
+                            {% comment %} {% for user in user %}
+                            <li class="navbar-item" >
+                                <a class="nav-link" href="#" colour="White" >Welcome {{ user.username }}</a>
+                            </li>
+                            {% endfor %} {% endcomment %}
+                      </ul> 
+        </nav>
+                 {% for message in messages %}
+                        <div class="alert alert-success">
+                            <a class="close" href="#" data-dismiss="alert">×</a>
+                            {{ message }}
+                        </div> 
+                {% endfor %}
+        <div class="container">
+            <div class="col-md-8 m-auto d-block">
+                    <h1 class="text-success text center">Upload Your Blog</h1><br>
+                       
+                       
+                        {% load crispy_forms_tags %} {% comment %} this is done to apply boostrap to modelforms. see its setting in settings.py {% endcomment %}
+                        {% block content %}
+                        <form action="" enctype="multipart/form-data" method="POST">
+                            {% csrf_token %}
+                            {% comment %} <input  value="{{request.user}}" name="user"> {% endcomment %}
+                            {{ form| crispy }}
+                        </br></br><button type="submit">Upload</button>
+                        </form>
+                        {% endblock %}
+                    </div>
+        </div>
+       
+	</body>
+</html>
+

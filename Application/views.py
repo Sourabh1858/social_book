@@ -76,6 +76,7 @@ def generateOTP() :
 @csrf_protect
 def register_run(request):
     if request.method=='POST':
+        print("Inside register view of app")
         email=request.POST.get('email')
         username=request.POST.get('username')
         pass1=request.POST.get('password')
@@ -162,6 +163,9 @@ def authorsAndSellers_run(request):
     # print("filteredCustomers",filteredCustomers)
     return render(request,'Application/authorsAndSellers.html', {'CustomUsers': filteredCustomers})
 
+def forgot_password_run(request):
+    return render(request,'Application/forgot-password.html')
+
 def uploadFile_run(request):
     # submitted=False
     # user=CustomUser.objects.get(id=request.user.id)
@@ -237,6 +241,19 @@ class ListUsers(viewsets.ModelViewSet):
     def get_queryset(self):
         return CustomUser.objects.all()
   
+
+'''  Note that the default obtain_auth_token view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.
+
+By default, there are no permissions or throttling applied to the obtain_auth_token view. If you do wish to apply to throttle you'll need to override the view class, and include them using the throttle_classes attribute.
+
+If you need a customized version of the obtain_auth_token view, you can do so by subclassing the ObtainAuthToken view class, and using that in your url conf instead.
+
+For example, you may return additional user information beyond the token value:'''
+# command for genrating tokens after version 3.6.4- ./manage.py drf_create_token <username>
+
+# In case you want to regenerate the token (for example if it has been compromised or leaked) 
+# you can pass an additional parameter:./manage.py drf_create_token -r <username>
+
 
 class CustomAuthToken(ObtainAuthToken):
 

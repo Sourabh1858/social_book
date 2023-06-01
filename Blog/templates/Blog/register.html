@@ -1,0 +1,144 @@
+<!DOCTYPE html> 
+{% load static %}
+
+<html>
+	<head>
+		<title></title>
+
+		{% load bootstrap5 %}
+ 		{% bootstrap_css %}
+  		{% bootstrap_javascript %}
+
+		<script type="text/javascript">
+			
+			function form_validation()
+			{
+				var errorval=true;
+				
+				var username = document.getElementById("username").value;
+				console.log("username:",username);
+				var email = document.getElementById("email").value;
+				console.log("email:",email);
+				var pass = document.getElementById("pass").value;
+				console.log("pass:",pass);
+				var cpass = document.getElementById("cpass").value;
+				console.log("cpass:",cpass);
+
+				if((username=="") && (email=="") && (pass=="") && (cpass==""))
+				{
+					
+					alert("All fields are manadatory");
+					errorval=false;
+					
+				}
+				
+
+				else if((username=="") || (username.length < 5))
+				{
+					
+					alert("Username can't be empty or less than 5 charaters");
+					console.log("inside  uname checking:",username);
+					errorval=false;
+					
+				}
+
+				else if(email=="")
+				{
+					
+					alert("Enter valid email");
+					console.log("inside  email checking:",username);
+					errorval=false;
+					
+				}
+
+				else if((pass.length < 8) || (pass==""))
+				{
+					
+					alert("Password can't be smaller than 8 charaters or empty");
+					console.log("inside  pass1 checking:",pass+" ",pass.length); 
+					errorval=false;
+					
+				}
+
+				else if((cpass.length < 8) || (cpass==""))
+				{
+					
+					alert(" Confirm Password can't be smaller than 8 charaters or empty");
+					console.log("inside  pass2 checking:",cpass+" ",cpass.length); 
+					errorval=false;
+					
+				}
+
+				else if(pass!=cpass)
+				{
+					
+				    alert("Password and confirm password should match");
+				    console.log("inside 2 pass checking");
+					errorval=false;
+							
+				} 
+
+				if(errorval==true)
+				{
+					alert("You are Successfully registered");
+					return true;
+					
+				}
+				
+				if(errorval==false)
+				{
+					return false;
+				}
+						
+			
+			    
+
+		}
+		</script>
+
+		
+
+
+	</head>
+	<body>
+		
+		<div class="container">
+
+			<div class="col-lg-8 m-auto d-block">
+				<h1 class="text-success text center">Registartion Form</h1><br>
+				<form action="register" name="registration_form"  class="bg-light" onsubmit="return form_validation()" method="POST">
+          {% csrf_token %}
+					<div class="form-group">
+						<label>Username</label>
+						<input type="text" name="username" id="username"  class="form-control" autocomplete="off">
+					</div>
+
+					<div class="form-group">
+						<label>Email</label>
+						<input type="email" name="email" id="email" class="form-control" autocomplete="off">
+					</div>
+
+					<div class="form-group">
+						<label>Password</label>
+						<input type="password" name="pass" id="pass" class="form-control" autocomplete="off">
+					</div>
+
+					<div class="form-group">
+						<label>Confirm password</label>
+						<input type="password" name="cpass"  id="cpass" class="form-control" autocomplete="off">
+					</div>
+				</br>
+					{% comment %} <button type="button" class="btn btn-primary" onclick="return form_validation()">Submit</button> {% endcomment %}
+					 <input type="submit" name="submit" value="submit" class="btn btn-primary" /> 
+				</form>
+			</div>
+
+		</div>
+
+		
+
+
+
+	</body>
+</html>
+

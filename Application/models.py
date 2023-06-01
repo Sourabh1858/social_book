@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 
 
     def __str__(self):
-        return self.email
+        return self.username
 
 
 
@@ -45,7 +45,7 @@ class UploadedFile(models.Model):
 class Profile(models.Model):
     user=models.OneToOneField(CustomUser,on_delete=models.CASCADE)
     designation=models.CharField(max_length=50,null=False,blank=False)
-    salary=models.IntegerField(null=False,blank=False)
+    salary=models.IntegerField(null=True,blank=False)
     profile_photo=models.ImageField(upload_to='testFiles/profiles')
     # profile_photo=models.FileField(upload_to='testFiles/profiles')
 
@@ -58,7 +58,19 @@ class Profile(models.Model):
 
 
 #reference(https://www.django-rest-framework.org/api-guide/authentication/)
+''' Generating Tokens
+By using signals
+If you want every user to have an automatically generated Token,
+ you can simply catch the User's post_save signal.'''
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+''' post_save signal to automatically create the user profile for new users that register to the platform. 
+For this, create a signals.py file and write the code below.'''
+@receiver(post_save, sender=CustomUser)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+

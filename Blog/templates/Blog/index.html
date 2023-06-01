@@ -1,0 +1,756 @@
+
+<!DOCTYPE html> 
+{% load static %}
+{% csrf_token %}
+<html>
+	<head>
+		<title>Blogger Home</title>
+
+		{% load bootstrap5 %}
+ 		{% bootstrap_css %}
+  		{% bootstrap_javascript %}
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        
+        {% comment %} scripts for data tables implementation {% endcomment %}
+       {% comment %} <script src="cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"></script>
+        <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> {% endcomment %}
+	</head>
+	<body>
+        {% comment %} reference- geekyshows video- navbar in bootstrap {% endcomment %}
+        {% comment %} class,navbar-compulsory to mention for creating navbar {% endcomment %}
+        {% comment %} class,navbar-expand-sm:-Makes navbar responsive {% endcomment %}
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+             <a href="#" class="navbar-brand">
+                <img src="{% static 'css/blog.png'%}" height="70" width="70">Bloggers</a>
+            <ul class="navbar-nav">
+                <li class="navbar-item"><a href="{% url 'index' %}" class="nav-link">Home</a></li>
+                <li class="navbar-item"><a href="{% url 'upload' %}" class="nav-link">Upload Blog</a></li>
+                 <li class="navbar-item"><a href="{% url 'logout' %}" class="nav-link">Log Out</a></li>
+            </ul>
+                
+                      <ul class="navbar-nav ml-auto">
+                           {% for user in user %}
+                            <li class="navbar-item" >
+                                <a class="nav-link" href="#" colour="White" data-sid="{{ user.username }}">Welcome {{ user.username }}</a>
+                            </li>
+                            {% endfor %}
+                      </ul>
+            </ul>
+        </nav>
+            
+        <div class="container">
+            <center>
+                {% for blogs in page %}
+                </br>
+                <div class="card" style="width: 50rem;" >
+                  <h5 class="card-title">Uploaded By: {{blogs.user}}</h5>
+                  <h5 class="card-title">Time of upload: {{blogs.time}}</h5>
+                  
+                    <img class="card-img-top" src=" {{blogs.image.url}}" alt="Card image cap">
+                    <div class="card-body" id="cbody">
+                        
+                        <h5 class="card-title">{{blogs.title}}</h5>
+
+                        <p class="card-text">{{blogs.description}}</p>
+                        <hr>
+
+                        {% comment %} {% if blogs.likes.filter(id=userid).exists() %} {% endcomment %}
+                          {% if blogs.likes.id == userid %} 
+                         
+                         <button type="button" class="btn btn-danger btn-like"  data-sid="{{blogs.id}}" >
+                          Dislike </button>
+                          <span class="likes_count" id="likes_count">{{blogs.likes.count}}</span>
+                        
+                        {% else %} 
+                        
+                        <button type="button" class="btn btn-primary btn-like"  data-sid="{{blogs.id}}" >
+                          Like </button>
+                          <span class="likes_count" id="likes_count">{{blogs.likes.count}}</span>
+                        
+                        {% endif %}
+
+                        {% comment %} <input type="checkbox" name="liked_names" value="checkboxValue" class="liked_names" data-sid={{blogs.id}}>show liked users</input></br></br><hr> {% endcomment %}
+                        <img src="{% static 'css/eye_icon.jpg' %}" height="40" width="40" class="eye_icon" data-sid={{blogs.id}}></a>
+                          </br></br>
+                        <div class="container show_names" id="show_names" style="border: 1px solid black" ></div></br></br>
+                        
+                        <button type="button" class="btn btn-primary btn-comment" data-sid="{{blogs.id}}">Show Comments</button><hr></br>
+                        <div class="container show_comments" id="show_comments" style="border: 1px solid black" data-sid="{{blogs.user_id}}" ></div></br></br>
+                          <input type="text" placeholder="add comments here" class="typing" data-sid="{{blogs.id}}"></input>
+                          <button type="button" class="btn btn-success btn-update" style="display:None" data-sid="{{blogs.id}}">Update comment</button><hr>
+                          <button type="button" class="btn btn-success btn-add" data-sid="{{blogs.id}}">Add Comments</button>
+                          {% comment %} testing something {% endcomment %}
+                          <input type="hidden" name="hidden-button" value="hidden-value" data-sid="{{user.username}}">
+
+                          <p class="card-text"></p>
+                    </div>
+                    
+                </div></br>
+                {% endfor %}
+
+                  {% comment %} pagination {% endcomment %}
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-center">
+                          
+                          {% comment %} <a class="page-link" href="#" tabindex="-1">Previous</a> {% endcomment %}
+                          {% if page.has_previous %}
+                              {% comment %} <a href="?page=1">&laquo; first</a> {% endcomment %}
+                          <li class="page-item">
+                              <a class="page-link" href="/blog/index?page=1">&laquo; First</a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" tabindex="-1" href="/blog/index?page={{ page.previous_page_number }}">Previous</a>
+                          </li>
+                          {% else %}
+                              <li class="page-item disabled">
+                                  <span class="page-link">&laquo; First</span>
+                              </li>
+                              <li class="page-item disabled">
+                                  <span class="page-link">Previous</span>
+                              </li>
+                          {% endif %}
+                          
+                          {% comment %} <li class="page-item active">
+                          <a class="page-link" href="?page={{ page.number }}">{{ page.number }} <span class="sr-only">(current)</span></a>
+                          </li> {% endcomment %}
+                          {% for num in page.paginator.page_range %}
+                              {% if page.number == num %}
+                                  <li class="page-item active">
+                                      <span class="page-link">{{ num }}</span>
+                                  </li>
+                              {% else %}
+                                  <li class="page-item">
+                                      <a class="page-link" href="/blog/index?page={{ num }}">{{ num }}</a>
+                                  </li>
+                              {% endif %}
+                          {% endfor %}
+                          
+                          {% if page.has_next %}
+                          <li class="page-item">
+                              <a class="page-link" href="/blog/index?page={{ page.next_page_number }}">Next</a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" href="/blog/index?page={{ page.paginator.num_pages }}">Last &raquo;</a>
+                          </li>
+                          {% else %}
+                              <li class="page-item disabled">
+                                  <span class="page-link">Next</span>
+                              </li>
+                              <li class="page-item disabled">
+                                  <span class="page-link">Last &raquo;</span>
+                              </li>
+                          {% endif %}
+                          
+                      </ul>
+                  </nav>
+        </center>
+        </div>
+
+
+        <script>
+          
+         $(document).ready(function() {
+          $(document).on('click','.btn-like',function(event) {
+            event.preventDefault(); 
+            id=$(this).attr("data-sid")
+          
+            mythis=this;
+            clicked_value=$(this).val()
+            console.log("button is clicked,Blog ID:",id);
+            console.log("Clicked value of button is :",clicked_value);
+            
+            $.ajax({
+              type: 'POST',
+              url: 'likes', // Replace with the server-side script URL
+              data: { blog_id:id ,csrfmiddlewaretoken:'{{csrf_token}}'},
+               success:function(response)
+              {
+                console.log("Liked",response.liked)
+                console.log("Likes count",response.likes_count)
+                like=$(mythis).next().text(response.likes_count)
+                if(response.liked)
+                {
+                change=$(mythis).text('Dislike')
+                colour=$(mythis).css("background-color","red");
+                }
+
+                else 
+                {
+                change=$(mythis).text('Like')
+                colour=$(mythis).css("background-color","blue");
+                }
+
+              },
+              error:function(response)
+              {
+                console.log("failed",response)
+              }
+            });
+          });
+        });  
+
+
+        //show comments functionality
+        $(document).on('click','.btn-comment',function(event) {
+            event.preventDefault(); 
+            id=$(this).attr("data-sid")
+            showthis=this;
+
+           
+
+            {% comment %} accessing value passed from view of index {% endcomment %}
+            var userid='{{userid}}'
+            console.log("userid",userid)
+
+            
+
+            //jquery traversing done to just get username from <a> tag in <li> item of navbar
+            {% comment %} anchor_tag=$(showthis).parents().prevAll().eq(4).children('ul.ml-auto').children('li.navbar-item').children()
+            console.log("anchor_tag:",anchor_tag)
+            logged_user=$(showthis).parents().prevAll().eq(4).children('ul.ml-auto').children('li.navbar-item').children().attr('data-sid')
+            console.log("logged user for show buttons:",logged_user)
+
+            var name=logged_user
+            console.log("name",name) {% endcomment %}
+          
+            next_sb=$(this).nextAll().children()
+            console.log("next_sb",next_sb)
+            
+            console.log("show comments is clicked,Blog ID:",id);
+
+            button_text=$(showthis).text()
+            console.log("B text",button_text)
+            
+            
+             $.ajax({
+              type: 'POST',
+              url: 'show_comments', // Replace with the server-side script URL
+              data: { blog_id:id ,csrfmiddlewaretoken:'{{csrf_token}}'},
+               success:function(response)
+              {
+                console.log("Inside success function of show comments ")
+                console.log("Rsponse status",response.status)
+                console.log("logged user name",response.username)
+                logged_username=response.username
+
+
+                if(response.status)
+                {
+                  //converting array of objects of json string format to array
+                  //Here, response.comments is a JSON string
+                    var comments_array=JSON.parse(response.comments) 
+                    console.log("comments_array",comments_array)
+                    var str='<ol style="text-align:left">'
+                    for(var i=0;i<comments_array.length;i++)
+                    {
+                      var arr_element=comments_array[i];
+                      console.log("Array elements",arr_element)
+                      var username=comments_array[i].fields.username
+                      
+                      //adding edit and delete button if the comment is of logged in user
+                      if(response.username==username)
+                      {
+                        str+=`<li class="old_comment" data-sid="${username}"><b>${username}: </b>`
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments
+                        
+
+                  
+                         //to access variable value in JS write like this "${var_name}"
+                        str+=`<button type="button" class="btn btn-primary btn-sm cmt-edit" data-sid="${username}">Edit</button>`
+                        
+                        str+= `<button type="button" class="btn btn-danger btn-sm cmt-delete" data-sid="${comments}">Delete Comment</button></li><hr></br>` 
+                        
+                      } 
+                      else
+                      {
+                          str+='<li><b>'+username+' : '+'</b>'
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments+'</li><hr>'
+                      }
+
+                      console.log("comments",comments)
+                    }
+                    str+='</ol><hr>'
+                    console.log("Final string is",str)
+                    
+                    if(button_text=="Show Comments")
+                    {
+                      display=$(showthis).nextAll('div.show_comments').html(str)
+                      button=$(showthis).text('Hide Comments')
+                    }
+
+                    else if(button_text=="Hide Comments")
+                    {
+                      hide=$(showthis).nextAll('div.show_comments').html("")
+                      button=$(showthis).text('Show Comments')
+                    }
+                  }
+                
+                  else if(!response.status)
+                    final=$(showthis).nextAll('div.show_comments').html("No comments to show")
+                    if(button_text=="Show Comments")
+                    {
+                      display=$(showthis).nextAll('div.show_comments').html(str)
+                      button=$(showthis).text('Hide Comments')
+                    }
+
+                    else if(button_text=="Hide Comments")
+                    {
+                      hide=$(showthis).nextAll('div.show_comments').html("")
+                      button=$(showthis).text('Show Comments')
+                    }
+              },
+              error:function(response)
+              {
+                console.log("Inside Error function of show comments")
+                console.log("failed",response)
+              }
+            }); 
+
+          });
+
+
+          //Add comments functionality
+
+           $(document).on('click','.btn-add',function(event) {
+            event.preventDefault(); 
+            id=$(this).attr("data-sid")
+            mythis=this;
+            
+            typedval=$(mythis).prevAll('input.typing').val();
+            console.log("typedval",typedval)
+            
+            
+             $.ajax({
+              type: 'POST',
+              url: 'add_comments', // Replace with the server-side script URL
+              data: { blog_id:id ,text:typedval,csrfmiddlewaretoken:'{{csrf_token}}'},
+               success:function(response)
+              {
+
+                if(response.status)
+                {
+                  alert("Your comment is added successfully")
+                  //converting array of objects of json string format to array
+                  //Here, response.comments is a JSON string
+                    var comments_array=JSON.parse(response.comments) 
+                    console.log("comments_array",comments_array)
+                    var str='<ol style="text-align:left">'
+                    for(var i=0;i<comments_array.length;i++)
+                    {
+                       var arr_element=comments_array[i];
+                      console.log("Array elements",arr_element)
+                      var username=comments_array[i].fields.username
+                      
+                      //adding edit and delete button if the comment is of logged in user
+                      if(response.username==username)
+                      {
+                        str+=`<li class="old_comment" data-sid="${username}"><b>${username}: </b>`
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments
+                        
+
+                  
+                         //to access variable value in JS write like this "${var_name}"
+                        str+=`<button type="button" class="btn btn-primary btn-sm cmt-edit" data-sid="${username}">Edit</button>`
+                        
+                        str+= `<button type="button" class="btn btn-danger btn-sm cmt-delete" data-sid="${comments}">Delete Comment</button></li><hr></br>` 
+                        
+                      } 
+                      else
+                      {
+                          str+='<li><b>'+username+' : '+'</b>'
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments+'</li><hr>'
+                      }
+                      console.log("comments",comments)
+                    }
+                    str+='</ol>'
+                    console.log("Final string is",str)
+                    comments=$(mythis).prevAll('div.show_comments').html(str);
+                    button=$(showthis).text('Hide Comments')
+                    clearing=$(mythis).prevAll('input.typing').val("");
+                }
+                
+                  console.log("added comment is:",comments)
+                
+
+              },
+              error:function(response)
+              {
+                console.log("Inside Error function of add comments")
+                console.log("failed",response)
+                alert("Your comment is not added to the database")
+              }
+            });
+          });
+
+
+
+          //show names of users who liked the post
+          $(document).on('mouseover','.eye_icon',function(event) {
+            event.preventDefault(); 
+            id=$(this).attr("data-sid")
+            namesthis=this;
+            //clicked_value=$(this).text()
+            console.log("blog selected by hover is,Blog ID:",id);
+            
+          
+              //console.log("Inside ajax")
+                  $.ajax({
+                  type: 'POST',
+                  url: 'liked_users', // Replace with the server-side script URL
+                  data: { blog_id:id ,csrfmiddlewaretoken:'{{csrf_token}}'},
+                  success:function(response)
+                  {
+                    console.log("names length is:",response.names.length)
+                    console.log("Names in response are as below")
+                    //parsing received querset from data to jsonarray
+                    var str="<h5><b>Liked By:</b></h5>"
+                    var str2="<h5><b>Liked By:</b></h5>"
+                    str+="<ol style=text-align:left>"
+                    for(var i=0;i<response.names.length;i++)
+                    {
+                        console.log((i+1)+" "+response.names[i]+"\n");
+                        str+="<li>"+response.names[i]+"</li>"
+
+                    }
+                    
+                    str+="</ol>"
+                    console.log("Names list is:",str)
+
+                    next=$(namesthis).nextAll('div.show_names')
+                    console.log(next)
+
+                    if(response.names.length!=0)
+                    {
+                      data=$(namesthis).nextAll('div.show_names').html(str)
+                    }
+                    
+                    else if(response.names.length==0)
+                    {
+                      
+                      data=$(namesthis).nextAll('div.show_names').html(str2)
+                    }
+
+                  },
+                  error:function(error)
+                  {
+                    console.log("response names",error)
+                    
+                    
+                    alert("Inside error function of liked_users")
+                    
+                  }
+                });
+             
+
+          });
+
+          //hide names of users who liked the post //show names of users who liked the post
+          $(document).on('mouseout','.eye_icon',function(event) {
+            event.preventDefault(); 
+            id=$(this).attr("data-sid")
+            namesthis=this;
+            //clicked_value=$(this).text()
+            console.log("blog selected by hover is,Blog ID:",id);
+            
+          
+              //console.log("Inside ajax")
+                  $.ajax({
+                  type: 'POST',
+                  url: 'liked_users', // Replace with the server-side script URL
+                  data: { blog_id:id ,csrfmiddlewaretoken:'{{csrf_token}}'},
+                  success:function(response)
+                  {
+                    {% comment %}
+                    console.log("Names in response are as below")
+                    
+                    var str="<h2><b>Liked By:</b></h2>"
+                    str+="<ol style=text-align:left>"
+                    
+                    for(var i=0;i<response.names.length;i++)
+                    {
+                        console.log((i+1)+" "+response.names[i]+"\n");
+                        str+="<li>"+response.names[i]+"</li>"
+
+                    }
+                    
+                    str+="</ol>"
+                    console.log("Names list is:",str) {% endcomment %}
+
+                    next=$(namesthis).nextAll('div.show_names')
+                    console.log(next)
+
+                    data=$(namesthis).nextAll('div.show_names').html("")
+                    
+
+                  },
+                  error:function(error)
+                  {
+                    console.log("response names",error)
+                    
+                    
+                    alert("Inside error function of hiding liked_users")
+                    
+                  }
+                });
+             
+
+          });
+
+
+
+          //deleting the selected comment
+          $(document).on('click','.cmt-delete',function(event) {
+            event.preventDefault(); 
+            console.log("blog_id:",id)
+            console.log("delete comments button is clicked")
+            comment=$(this).attr("data-sid")
+            delete_this=this;
+            //clicked_value=$(this).text()
+            console.log("comment to be deleted is:",comment);
+            
+          
+               //console.log("Inside ajax")
+                  $.ajax({
+                  type: 'POST',
+                  url: 'delete_comment', // Replace with the server-side script URL
+                  data: { blog_id:id,comment:comment ,csrfmiddlewaretoken:'{{csrf_token}}'},
+                  success:function(response)
+                  {
+                    
+                    alert("Indside success of delete comment")
+                    console.log(response.status)
+
+                if(response.status)
+                {
+                  //converting array of objects of json string format to array
+                  //Here, response.comments is a JSON string
+                    var comments_array=JSON.parse(response.comments) 
+                    console.log("comments_array",comments_array)
+                    var str='<ol style="text-align:left">'
+                    for(var i=0;i<comments_array.length;i++)
+                    {
+                       var arr_element=comments_array[i];
+                      console.log("Array elements",arr_element)
+                      var username=comments_array[i].fields.username
+                      
+                      //adding edit and delete button if the comment is of logged in user
+                      if(response.username==username)
+                      {
+                        str+=`<li class="old_comment" data-sid="${username}"><b>${username}: </b>`
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments
+                        
+
+                  
+                         //to access variable value in JS write like this "${var_name}"
+                        str+=`<button type="button" class="btn btn-primary btn-sm cmt-edit" data-sid="${username}">Edit</button>`
+                        
+                        str+= `<button type="button" class="btn btn-danger btn-sm cmt-delete" data-sid="${comments}">Delete Comment</button></li><hr></br>` 
+                        
+                      } 
+                      else
+                      {
+                          str+='<li><b>'+username+' : '+'</b>'
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments+'</li><hr>'
+                      }
+                      console.log("comments",comments)
+                    }
+                    str+='</ol><hr>'
+                    console.log("Final string is",str)
+                    
+                    if(button_text=="Show Comments")
+                    {
+                      display=$(showthis).nextAll('div.show_comments').html(str)
+                      button=$(showthis).text('Hide Comments')
+                    }
+
+                    else if(button_text=="Hide Comments")
+                    {
+                      hide=$(showthis).nextAll('div.show_comments').html("")
+                      button=$(showthis).text('Show Comments')
+                    }
+                  }
+                
+                  else if(!response.status)
+                    final=$(showthis).nextAll('div.show_comments').html("No comments to show")
+                    if(button_text=="Show Comments")
+                    {
+                      display=$(showthis).nextAll('div.show_comments').html(str)
+                      button=$(showthis).text('Hide Comments')
+                    }
+
+                    else if(button_text=="Hide Comments")
+                    {
+                      hide=$(showthis).nextAll('div.show_comments').html("")
+                      button=$(showthis).text('Show Comments')
+                    }
+
+                  },
+                  error:function(error)
+                  {
+                    alert("Inside success of delete comment")
+                    
+                  }
+                });
+               
+          });
+
+
+
+          //editing the selected comment
+          $(document).on('click','.cmt-edit',function(event) {
+            event.preventDefault(); 
+            console.log("blog_id:",id)
+            console.log("edit comments button is clicked")
+            //taking old comment from data-sid attribute of comment button which is next to edit button
+            old_comment=$(this).next().eq(0).attr("data-sid")
+            console.log("old comment is:",old_comment);
+            edit_this=this;
+
+            text=$(edit_this).text()
+            console.log("button text is:",text)
+
+            edit_attr_val=$(edit_this).attr("data-sid")
+            console.log("Edit button attribute value",edit_attr_val)
+
+            var username=logged_username
+
+          
+            parent_edit=$(edit_this).parent()
+            console.log("parent of edit",parent_edit)
+
+            prev_edit=$(edit_this).prevAll('li.old_comment')
+            console.log("prev of edit:",prev_edit)
+
+            username=$(prev_edit).attr("data-sid")
+            console.log("username",username)
+
+            replace=$(edit_this).parent('li.old_comment').replaceWith(`<br><input type="text" class="cmt-update" value="${old_comment}"></input><button type="button" class="btn btn-success btn-sm btn-update" data-sid="${old_comment}">save</button><button type="button" class="btn btn-danger btn-sm cmt-delete" data-sid="${old_comment}" >Delete Comment</button>`)
+            
+
+            buttons=`<button type="button" class="btn btn-success btn-sm btn-update" data-sid="${old_comment}">save</button>`
+            buttons+=`<button type="button" class="btn btn-danger btn-sm cmt-delete" >Delete Comment</button>`
+
+           
+
+          });
+
+            //updating the comment
+            $(document).on('click','.btn-update',function(event){
+              console.log("update comments button is clicked,blog id:",id)
+              console.log("blog_id:",id)
+              old_comment=$(this).attr("data-sid")
+              console.log("Old comment is:",old_comment)
+              newdata= $(this).prevAll('input.cmt-update').val()
+              console.log("New comment is:",newdata)
+
+              console.log("Username for update:",edit_attr_val)
+
+
+              $.ajax({
+                  type:'POST',
+                  url: 'update_comment', // Replace with the server-side script URL
+                  data: { blog_id:id,old_comment:old_comment,new_comment:newdata,username:edit_attr_val,csrfmiddlewaretoken:'{{csrf_token}}'},
+                  success:function(response)
+                  {
+                    
+                    alert("Indside success of edit comment")
+                     if(response.status)
+                 {
+                  //converting array of objects of json string format to array
+                  //Here, response.comments is a JSON string
+                    var comments_array=JSON.parse(response.comments) 
+                    console.log("comments_array",comments_array)
+                    var str='<ol style="text-align:left">'
+                    for(var i=0;i<comments_array.length;i++)
+                    {
+                      var arr_element=comments_array[i];
+                      console.log("Array elements",arr_element)
+                      var username=comments_array[i].fields.username
+                      
+                      //adding edit and delete button if the comment is of logged in user
+                      if(response.username==username)
+                      {
+                        str+=`<li class="old_comment" data-sid="${username}"><b>${username}: </b>`
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments
+                        
+
+                  
+                         //to access variable value in JS write like this "${var_name}"
+                        str+=`<button type="button" class="btn btn-primary btn-sm cmt-edit" data-sid="${username}">Edit</button>`
+                        
+                        str+= `<button type="button" class="btn btn-danger btn-sm cmt-delete" data-sid="${comments}">Delete Comment</button></li><hr></br>` 
+                        
+                      } 
+                      else
+                      {
+                          str+='<li><b>'+username+' : '+'</b>'
+                        console.log("username",username)
+                        var comments=comments_array[i].fields.comments
+                        str+=comments+'</li><hr>'
+                      }
+                      console.log("comments",comments)
+                    }
+                    str+='</ol>'
+                    console.log("Final string is",str)
+                    
+                    if(button_text=="Show Comments")
+                    {
+                      display=$(showthis).nextAll('div.show_comments').html(str)
+                      button=$(showthis).text('Hide Comments')
+                    }
+
+                    else if(button_text=="Hide Comments")
+                    {
+                      hide=$(showthis).nextAll('div.show_comments').html("")
+                      button=$(showthis).text('Show Comments')
+                    }
+                  }
+                
+                  else if(!response.status)
+                    final=$(showthis).nextAll('div.show_comments').html("No comments to show")
+                    if(button_text=="Show Comments")
+                    {
+                      display=$(showthis).nextAll('div.show_comments').html(str)
+                      button=$(showthis).text('Hide Comments')
+                    }
+
+                    else if(button_text=="Hide Comments")
+                    {
+                      hide=$(showthis).nextAll('div.show_comments').html("")
+                      button=$(showthis).text('Show Comments')
+                    }
+                    
+
+               
+                  },
+                  error:function(error)
+                  {
+                    alert("Indside error of edit comment")
+                    
+                  }
+                });
+
+            });
+               
+
+          {% comment %} for displaying the desired table in datatbles {% endcomment %}
+           {% comment %} let table = new DataTable('#myTable'); {% endcomment %}
+    </script>
+	</body>
+</html>
+

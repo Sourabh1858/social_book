@@ -42,12 +42,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Application',
+    'Blog',
     'crispy_forms',
     'crispy_bootstrap4',
     'rest_framework',
+    'bootstrap5',
+    'django_ajax', 
+
+    # third party package for user registartion and authentication endpoints
     'djoser',
     'django_filters',
     'rest_framework.authtoken', #reference(https://www.django-rest-framework.org/api-guide/authentication/)
+
+    # JWT authentication backend library
+    'rest_framework_simplejwt',
 ]
 
 CRISPY_TEMPLATE_PACK ='bootstrap4'
@@ -67,6 +75,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
 # Default global settings for permissions - reference(www.django-rest-framework.org/api-guide/permission)
@@ -106,8 +115,12 @@ WSGI_APPLICATION = 'social_book.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'blog',
+        'USER':'postgres',
+        'PASSWORD':'postgresql123',
+        'HOST':'localhost',
+        'PORT':5433,
     }
 }
 

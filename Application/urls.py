@@ -14,7 +14,11 @@ urlpatterns = [
     path('uploaded_Files',views.uploaded_Files_run, name='uploaded_Files'),
     path('api/users',views.ListUsers.as_view({'get': 'list'})),
     path('sendOTP', views.otpVerification_run, name='sendOTP'),
+    path('forgot_password', views.forgot_password_run, name='forgot_password'),
+
+    # path for generating api token
     path('api/token/auth', views.CustomAuthToken.as_view()),
+    
     path('logout', views.logout_run,name='logout'),
     path('profileupdate', views.ProfileUpdateView.as_view()),
     

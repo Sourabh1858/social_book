@@ -22,4 +22,7 @@ urlpatterns = [
     path('',include('Application.urls')),
     path('admin/', admin.site.urls),
     path('app/',include(router.urls)),
+    path('auth/',include('djoser.urls')),
+    path('auth/',include('djoser.urls.jwt')),
+    path('blog/',include('Blog.urls')),
 ]
